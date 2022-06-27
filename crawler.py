@@ -23,17 +23,6 @@ DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
 
 
-with open('chars.csv', encoding='utf-8') as f:
-  chars = f.readline().split(',')
-
-
-dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
-db = dbclient["MapleStat"]
-col_log = db.log
-date_log = col_log.find_one({"status": "COMPLETE"}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
-last_date = date_log["date"] if date_log else datetime.datetime(2000, 1, 1)
-
-
 current_path = Path.cwd()
 data_dir = current_path / "data"
 data_dir.mkdir(exist_ok=True)
@@ -45,6 +34,18 @@ stat_dir = month_dir / "stat"
 stat_dir.mkdir(exist_ok=True)
 img_dir = month_dir / "image"
 img_dir.mkdir(exist_ok=True)
+
+
+chars_path = current_path / 'chars.csv'
+with open(f"{str(chars_path)}", encoding='utf-8') as f:
+  chars = f.readline().split(',')
+
+
+dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
+db = dbclient["MapleStat"]
+col_log = db.log
+date_log = col_log.find_one({"status": "COMPLETE"}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
+last_date = date_log["date"] if date_log else datetime.datetime(2000, 1, 1)
 
 
 base_url = "https://maplestory.nexon.com"
