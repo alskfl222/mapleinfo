@@ -11,21 +11,26 @@ import pymongo
 import certifi
 from bs4 import BeautifulSoup
 
+
 today = datetime.date.today()
 today_date = datetime.datetime(today.year, today.month, today.day)
+
 
 DBID = os.getenv("MONGODB_ID")
 DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
 
+
 with open('chars.csv', encoding='utf-8') as f:
   chars = f.readline().split(',')
+
 
 dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
 db = dbclient["MapleStat"]
 col_log = db.log
-date_log = col_log.find({}, {"_id": 0}).sort("date", pymongo.DESCENDING).limit(1)
-last_date = date_log[0]["date"]
+date_log = col_log.find_one({"status": "COMPLETE"}, {"_id": 0}, sort=[("date", pymongo.DESCENDING)])
+last_date = date_log["date"] if date_log else datetime.datetime(2000, 1, 1)
+
 
 current_path = Path.cwd()
 data_dir = current_path / "data"
@@ -39,13 +44,16 @@ stat_dir.mkdir(exist_ok=True)
 img_dir = month_dir / "image"
 img_dir.mkdir(exist_ok=True)
 
+
 base_url = "https://maplestory.nexon.com"
+
 
 def export_db(char_info):
   col = db[char_info['name']]
   row = char_info
   row["date"] = today_date
   col.insert_one(row)
+
 
 def get_char_stat(char):
   print(f"{char} START")
@@ -87,20 +95,26 @@ def get_char_stat(char):
   print(f"{char} DONE")
   print(f"{'='*50}")
   
+
+
 def log_db(status):
   log = {"date": today_date, "chars": chars, "status": status, 'time': datetime.datetime.now()}
   col_log.insert_one(log)
-  print(f"MAPLEINFO UPDATE {status} - {today_date.strftime('%Y-%m-%d')}")
+  print(f"MAPLEINFO : {status} - {today_date.strftime('%Y-%m-%d')}")
+
 
 def main():
   if last_date != today_date:
-    print(f"MAPLEINFO UPDATE START - {today_date.strftime('%Y-%m-%d')}")
-    for char in chars:
-      get_char_stat(char)
-    log_db('COMPLETE')
+    print(f"MAPLEINFO : UPDATE START - {today_date.strftime('%Y-%m-%d')}")
+    try:
+      for char in chars:
+        get_char_stat(char)
+      log_db('COMPLETE')
+    except:
+      log_db('FAIL')
   else:
-    print(f"MAPLEINFO ALREADY UPDATED - {today_date.strftime('%Y-%m-%d')}")
-    log_db('')
+    log_db('ALREADY UPDATED')
+
 
 if __name__ == '__main__':
   main()
