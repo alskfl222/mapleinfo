@@ -18,12 +18,13 @@ today_date = datetime.datetime(today.year, today.month, today.day)
 
 
 load_dotenv()
+ENV = os.getenv("ENV")
 DBID = os.getenv("MONGODB_ID")
 DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
 
 
-current_path = Path.cwd()
+current_path = Path.cwd() if ENV == "local" else Path.home() / "mapleinfo"
 data_dir = current_path / "data"
 data_dir.mkdir(exist_ok=True)
 year_dir = data_dir / f"{today_date.strftime('%Y')}"
