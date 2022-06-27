@@ -9,6 +9,7 @@ import requests
 import urllib
 import pymongo
 import certifi
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
 
@@ -16,6 +17,7 @@ today = datetime.date.today()
 today_date = datetime.datetime(today.year, today.month, today.day)
 
 
+load_dotenv()
 DBID = os.getenv("MONGODB_ID")
 DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
