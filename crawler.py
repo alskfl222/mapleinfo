@@ -28,7 +28,7 @@ with open('chars.csv', encoding='utf-8') as f:
 dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
 db = dbclient["MapleStat"]
 col_log = db.log
-date_log = col_log.find_one({"status": "COMPLETE"}, {"_id": 0}, sort=[("date", pymongo.DESCENDING)])
+date_log = col_log.find_one({"status": "COMPLETE"}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
 last_date = date_log["date"] if date_log else datetime.datetime(2000, 1, 1)
 
 
@@ -56,7 +56,7 @@ def export_db(char_info):
 
 
 def get_char_stat(char):
-  print(f"{char} START")
+  print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
   char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}")
   char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
   char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
@@ -92,7 +92,7 @@ def get_char_stat(char):
     char_info[f"hyper_stat_{hyperstat_count}"] = hyperstat[i].strip()
     hyperstat_count += 1
   export_db(char_info)
-  print(f"{char} DONE")
+  print(f"MAPLEINFO : GET CHARACTOR STAT - {char} DONE")
   print(f"{'='*50}")
   
 
