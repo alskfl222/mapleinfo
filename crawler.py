@@ -5,16 +5,13 @@ import os
 from pathlib import Path
 import re
 import datetime
+from pytz import timezone, utc
 import requests
 import urllib
 import pymongo
 import certifi
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
-
-
-today = datetime.date.today()
-today_date = datetime.datetime(today.year, today.month, today.day)
 
 
 load_dotenv()
@@ -24,6 +21,21 @@ DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
 
 
+def get_kst_now():
+  now = utc.localize(datetime.datetime.utcnow())
+  kst_now = now.astimezone(timezone('Asia/Seoul'))
+  return kst_now
+
+def get_kst_today():
+  now = utc.localize(datetime.datetime.utcnow())
+  kst_now = now.astimezone(timezone('Asia/Seoul'))
+  kst_today = datetime.datetime(kst_now.year, kst_now.month, kst_now.day)
+  return kst_today
+
+
+today_date = get_kst_today()
+
+
 current_path = Path.cwd() if ENV == "local" else Path.home() / "mapleinfo"
 data_dir = current_path / "data"
 data_dir.mkdir(exist_ok=True)
@@ -31,8 +43,6 @@ year_dir = data_dir / f"{today_date.strftime('%Y')}"
 year_dir.mkdir(exist_ok=True)
 month_dir = year_dir / f"{today_date.strftime('%m')}"
 month_dir.mkdir(exist_ok=True)
-stat_dir = month_dir / "stat"
-stat_dir.mkdir(exist_ok=True)
 img_dir = month_dir / "image"
 img_dir.mkdir(exist_ok=True)
 
@@ -102,7 +112,7 @@ def get_char_stat(char):
 
 
 def log_db(status):
-  log = {"date": today_date, "chars": chars, "status": status, 'time': datetime.datetime.now()}
+  log = {"date": today_date, "chars": chars, "status": status, 'time': get_kst_now()}
   col_log.insert_one(log)
   print(f"MAPLEINFO : {status} - {today_date.strftime('%Y-%m-%d')}")
 
