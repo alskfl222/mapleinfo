@@ -76,20 +76,6 @@ def export_db(char_info):
   col.insert_one(row)
 
 
-def get_char_link(char):
-  try:
-    print(f"{base_url}/Ranking/World/Total?c={char}")
-    char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
-    char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
-    char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
-    print('RANK PAGE')
-    return char_link
-  except:
-    print(char_rank_page_soup)
-    time.sleep(2)
-    return
-
-
 def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
 
@@ -100,12 +86,15 @@ def get_char_stat(char):
     print(f"{'='*50}")
     return True, char
 
-  char_link = get_char_link(char)
+  print(f'RANK PAGE - {base_url}/Ranking/World/Total?c={char}')
+  char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
+  char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
+  char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
 
   try:
+    print(f'CHARACTOR PAGE - {char_link}')
     char_stat_page_res = requests.get(char_link, headers=headers)
     char_stat_page_soup = BeautifulSoup(char_stat_page_res.text, "lxml")
-    print('CHARACTOR PAGE')
   except:
     print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (CHECK CHARACTOR STAT OPEN)")
     return False, char
@@ -121,8 +110,8 @@ def get_char_stat(char):
 
   char_info = {"name":char, "level":level, "class_type":class_type, "exp":exp}
   stat_table = char_stat_page_soup.find_all(class_="table_style01")[1]
-  char_info_name = ["stat_att", "hp", "mp", "str", "dex", "int", "luk", \
-    "critical_dmg", "boss_att", "ignore_def", "status_resistance", "knockback_resistance", \
+  char_info_name = ["stat_att", "hp", "mp", "str", "dex", "int", "luk",
+    "critical_dmg", "boss_att", "ignore_def", "status_resistance", "knockback_resistance",
     "def", "speed", "jump", "star_force", "honor_exp", "arcane_power"]
   char_info_att = stat_table.find_all("td")
   for i in range(0, len(char_info_att)-2):
@@ -155,6 +144,7 @@ def log_db(status, *args):
   if status == 'PARTIAL':
     log['error_chars'] = args[0]
   col_log.insert_one(log)
+  print()
   print(f"MAPLEINFO : {status} - {today_date.strftime('%Y-%m-%d')}")
   print()
   print(f"{'='*50}")
