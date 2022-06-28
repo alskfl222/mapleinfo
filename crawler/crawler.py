@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import os
+import traceback
 from pathlib import Path
 import re
 import datetime
@@ -133,7 +134,7 @@ def main():
         get_char_stat(char)
       # log_db('COMPLETE')
     except:
-      pass
+      print(traceback.format_exc())
       # log_db('FAIL')
   else:
     # log_db('ALREADY UPDATED')
