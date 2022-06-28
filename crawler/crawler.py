@@ -79,11 +79,11 @@ def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
 
   col = db[char]
-  last_date_char_stat = col.find_one({}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
-  if today_date == last_date_char_stat:
+  last_date_char = col.find_one({}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])['date']
+  if today_date == last_date_char:
     print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ALREADY EXIST")
     print(f"{'='*50}")
-    return char
+    return
 
   char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
   char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
@@ -96,6 +96,7 @@ def get_char_stat(char):
     print('CHARACTOR PAGE')
   except:
     print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (CHECK CHARACTOR STAT OPEN)")
+    return char
 
   level = char_stat_page_soup.select_one(".char_info > dl:nth-child(1) > dd").text.split(".")[1]
   class_type = char_stat_page_soup.select_one(".char_info > dl:nth-child(2) > dd").text.split("/")[1]
