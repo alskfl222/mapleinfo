@@ -60,6 +60,11 @@ last_date = date_log["date"] if date_log else datetime.datetime(2000, 1, 1)
 
 
 base_url = "https://maplestory.nexon.com"
+user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+headers = {"User-Agent": user_agent}
+opener = urllib.request.build_opener()
+opener.addheaders = [("User-Agent", user_agent)]
+urllib.request.install_opener(opener)
 
 
 def export_db(char_info):
@@ -71,11 +76,13 @@ def export_db(char_info):
 
 def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
-  char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}")
+  char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
   char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
+  print('RANK PAGE')
   char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
-  char_stat_page_res = requests.get(char_link)
+  char_stat_page_res = requests.get(char_link, headers=headers)
   char_stat_page_soup = BeautifulSoup(char_stat_page_res.text, "lxml")
+  print('CHARACTOR PAGE')
   level = char_stat_page_soup.select_one(".char_info > dl:nth-child(1) > dd").text.split(".")[1]
   class_type = char_stat_page_soup.select_one(".char_info > dl:nth-child(2) > dd").text.split("/")[1]
   exp = "".join(re.findall("\d+", char_stat_page_soup.select_one(".char_info > div.level_data > span:nth-child(1)").text))
@@ -83,6 +90,7 @@ def get_char_stat(char):
   img_path = img_dir / f"{today_date.strftime('%Y-%m-%d')}_{char}.png"
   if not os.path.isfile(str(img_path)):
     urllib.request.urlretrieve(img, str(img_path))
+    print(f'GET {char} IMAGE')
   char_info = {"name":char, "level":level, "class_type":class_type, "exp":exp}
   stat_table = char_stat_page_soup.find_all(class_="table_style01")[1]
   char_info_name = ["stat_att", "hp", "mp", "str", "dex", "int", "luk", \
