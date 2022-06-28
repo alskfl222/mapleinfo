@@ -77,13 +77,26 @@ def export_db(char_info):
 
 def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
+
+  col = db[char]
+  last_date_char_stat = col.find_one({}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
+  if today_date == last_date_char_stat:
+    print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ALREADY EXIST")
+    print(f"{'='*50}")
+    return char
+
   char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
   char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
-  print('RANK PAGE')
   char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
-  char_stat_page_res = requests.get(char_link, headers=headers)
-  char_stat_page_soup = BeautifulSoup(char_stat_page_res.text, "lxml")
-  print('CHARACTOR PAGE')
+  print('RANK PAGE')
+
+  try:
+    char_stat_page_res = requests.get(char_link, headers=headers)
+    char_stat_page_soup = BeautifulSoup(char_stat_page_res.text, "lxml")
+    print('CHARACTOR PAGE')
+  except:
+    print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (CHECK CHARACTOR STAT OPEN)")
+
   level = char_stat_page_soup.select_one(".char_info > dl:nth-child(1) > dd").text.split(".")[1]
   class_type = char_stat_page_soup.select_one(".char_info > dl:nth-child(2) > dd").text.split("/")[1]
   exp = "".join(re.findall("\d+", char_stat_page_soup.select_one(".char_info > div.level_data > span:nth-child(1)").text))
@@ -92,6 +105,7 @@ def get_char_stat(char):
   if not os.path.isfile(str(img_path)):
     urllib.request.urlretrieve(img, str(img_path))
     print(f'GET {char} IMAGE')
+
   char_info = {"name":char, "level":level, "class_type":class_type, "exp":exp}
   stat_table = char_stat_page_soup.find_all(class_="table_style01")[1]
   char_info_name = ["stat_att", "hp", "mp", "str", "dex", "int", "luk", \
@@ -114,31 +128,42 @@ def get_char_stat(char):
       continue
     char_info[f"hyper_stat_{hyperstat_count}"] = hyperstat[i].strip()
     hyperstat_count += 1
-  # export_db(char_info)
+  export_db(char_info)
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} DONE")
   print(f"{'='*50}")
   
 
 
-def log_db(status):
+def log_db(status, *args):
   log = {"date": today_date, "chars": chars, "status": status, 'time': get_kst_now()}
+  if status == 'FAIL':
+    log['error_log'] = traceback.format_exc()
+  if status == 'PARTIAL':
+    log['error_chars'] = args[0]
   col_log.insert_one(log)
   print(f"MAPLEINFO : {status} - {today_date.strftime('%Y-%m-%d')}")
+  print()
+  print(f"{'='*50}")
+  print()
 
 
 def main():
   if last_date != today_date:
     print(f"MAPLEINFO : UPDATE START - {today_date.strftime('%Y-%m-%d')}")
+    error_chars = []
     try:
       for char in chars:
-        get_char_stat(char)
-      # log_db('COMPLETE')
+        error_char = get_char_stat(char)
+        if error_char:
+          error_chars.append(error_char)
+      if not error_chars:
+        log_db('COMPLETE')
+      else:
+        log_db('PARTIAL', error_chars)
     except:
-      print(traceback.format_exc())
-      # log_db('FAIL')
+      log_db('FAIL')
   else:
-    # log_db('ALREADY UPDATED')
-    pass
+    log_db('ALREADY UPDATED')
 
 
 if __name__ == '__main__':
