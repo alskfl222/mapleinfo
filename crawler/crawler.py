@@ -105,7 +105,7 @@ def get_char_stat(char):
       continue
     char_info[f"hyper_stat_{hyperstat_count}"] = hyperstat[i].strip()
     hyperstat_count += 1
-  export_db(char_info)
+  # export_db(char_info)
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} DONE")
   print(f"{'='*50}")
   
@@ -123,11 +123,13 @@ def main():
     try:
       for char in chars:
         get_char_stat(char)
-      log_db('COMPLETE')
+      # log_db('COMPLETE')
     except:
-      log_db('FAIL')
+      pass
+      # log_db('FAIL')
   else:
-    log_db('ALREADY UPDATED')
+    # log_db('ALREADY UPDATED')
+    pass
 
 
 if __name__ == '__main__':
