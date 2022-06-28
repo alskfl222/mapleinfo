@@ -51,7 +51,7 @@ img_dir.mkdir(exist_ok=True)
 
 chars_path = current_path / 'chars.csv'
 with open(f"{str(chars_path)}", encoding='utf-8') as f:
-  chars = f.readline().split(',')
+  chars = f.readline().split(',')[:-1]
 
 
 dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
@@ -78,15 +78,16 @@ def export_db(char_info):
 
 def get_char_link(char):
   try:
+    print(f"{base_url}/Ranking/World/Total?c={char}")
     char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
     char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
     char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
     print('RANK PAGE')
     return char_link
   except:
-    print('RETRY')
+    print(char_rank_page_soup)
     time.sleep(2)
-    return get_char_link(char)
+    return
 
 
 def get_char_stat(char):
