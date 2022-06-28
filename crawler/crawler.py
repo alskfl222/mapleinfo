@@ -148,6 +148,7 @@ def log_db(status, *args):
 
 
 def main():
+  print(f"MAPLEINFO : LAST DATE - {last_date.strftime('%Y-%m-%d')}")
   if last_date != today_date:
     print(f"MAPLEINFO : UPDATE START - {today_date.strftime('%Y-%m-%d')}")
     error_chars = []
