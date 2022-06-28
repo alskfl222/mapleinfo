@@ -79,16 +79,20 @@ def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
 
   col = db[char]
-  last_date_char = col.find_one({}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])['date']
-  if today_date == last_date_char:
+  last_char = col.find_one({}, {"_id": 0, 'date': 1}, sort=[("date", pymongo.DESCENDING)])
+  if last_char and today_date == last_char['date']:
     print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ALREADY EXIST")
     print(f"{'='*50}")
-    return
+    return True, char
 
-  char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
-  char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
-  char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
-  print('RANK PAGE')
+  try:
+    char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
+    char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
+    char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
+    print('RANK PAGE')
+  except:
+    print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (RANK PAGE)")
+    return False, char    
 
   try:
     char_stat_page_res = requests.get(char_link, headers=headers)
@@ -96,7 +100,7 @@ def get_char_stat(char):
     print('CHARACTOR PAGE')
   except:
     print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (CHECK CHARACTOR STAT OPEN)")
-    return char
+    return False, char
 
   level = char_stat_page_soup.select_one(".char_info > dl:nth-child(1) > dd").text.split(".")[1]
   class_type = char_stat_page_soup.select_one(".char_info > dl:nth-child(2) > dd").text.split("/")[1]
@@ -132,6 +136,7 @@ def get_char_stat(char):
   export_db(char_info)
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} DONE")
   print(f"{'='*50}")
+  return True, char
   
 
 
@@ -152,12 +157,15 @@ def main():
   print(f"MAPLEINFO : LAST DATE - {last_date.strftime('%Y-%m-%d')}")
   if last_date != today_date:
     print(f"MAPLEINFO : UPDATE START - {today_date.strftime('%Y-%m-%d')}")
+    update_chars = []
     error_chars = []
     try:
       for char in chars:
-        error_char = get_char_stat(char)
-        if error_char:
-          error_chars.append(error_char)
+        status, char = get_char_stat(char)
+        if status:
+          update_chars.append(char)
+        else:
+          error_chars.append(char)
       if not error_chars:
         log_db('COMPLETE')
       else:
