@@ -5,7 +5,6 @@ import os
 import traceback
 from pathlib import Path
 import re
-import time
 import datetime
 from pytz import timezone, utc
 import requests
@@ -51,7 +50,7 @@ img_dir.mkdir(exist_ok=True)
 
 chars_path = current_path / 'chars.csv'
 with open(f"{str(chars_path)}", encoding='utf-8') as f:
-  chars = f.readline().split(',')[:-1]
+  chars = f.readline().strip().split(',')
 
 
 dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
