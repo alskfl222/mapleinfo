@@ -5,6 +5,7 @@ import os
 import traceback
 from pathlib import Path
 import re
+import time
 import datetime
 from pytz import timezone, utc
 import requests
@@ -75,6 +76,19 @@ def export_db(char_info):
   col.insert_one(row)
 
 
+def get_char_link(char):
+  try:
+    char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
+    char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
+    char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
+    print('RANK PAGE')
+    return char_link
+  except:
+    print('RETRY')
+    time.sleep(2)
+    return get_char_link(char)
+
+
 def get_char_stat(char):
   print(f"MAPLEINFO : GET CHARACTOR STAT - {char} START")
 
@@ -85,14 +99,7 @@ def get_char_stat(char):
     print(f"{'='*50}")
     return True, char
 
-  try:
-    char_rank_page_res = requests.get(f"{base_url}/Ranking/World/Total?c={char}", headers=headers)
-    char_rank_page_soup = BeautifulSoup(char_rank_page_res.text, 'lxml')
-    char_link = base_url + char_rank_page_soup.select_one('.search_com_chk a')['href']
-    print('RANK PAGE')
-  except:
-    print(f"MAPLEINFO : GET CHARACTOR STAT - {char} ERROR (RANK PAGE)")
-    return False, char    
+  char_link = get_char_link(char)
 
   try:
     char_stat_page_res = requests.get(char_link, headers=headers)
