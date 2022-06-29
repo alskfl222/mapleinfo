@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CharController } from './controllers/char.controller';
-import { CharService } from './services/char.service';
+import { CharController } from '../controllers/char.controller';
+import { CharService } from '../services/char.service';
 
 @Module({
   controllers: [CharController],
