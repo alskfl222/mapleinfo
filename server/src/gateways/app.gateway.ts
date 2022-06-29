@@ -9,9 +9,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(80, {
-  transports: ['websocket'],
+@WebSocketGateway(4004, {
+  transports: ['polling'],
   namespace: 'mapleinfo',
+  cors: true,
 })
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
