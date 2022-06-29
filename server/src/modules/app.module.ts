@@ -3,6 +3,7 @@ import { ConfigurationModule } from './config.module';
 import { CharModule } from './char.module';
 import { AppController } from '../controllers/app.controller';
 import { AppService } from '../services/app.service';
+import { AppGateway } from 'src/gateways/app.gateway';
 
 @Module({
   imports: [
@@ -10,6 +11,6 @@ import { AppService } from '../services/app.service';
     CharModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}
