@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
-import { CatModule } from './cat.module';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
+import { ConfigurationModule } from './config.module';
+import { CharModule } from './char.module';
+import { AppController } from '../controllers/app.controller';
+import { AppService } from '../services/app.service';
+import { AppGateway } from 'src/gateways/app.gateway';
 
 @Module({
-  imports: [CatModule],
+  imports: [
+    ConfigurationModule,
+    CharModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}
