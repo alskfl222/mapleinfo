@@ -13,15 +13,13 @@ export default function Viewer(props: { char: string }) {
   if (!data) {
     return <div>LOADING...</div>;
   }
+  const { name, level, exp } = data;
+
   return (
     <div>
-      {Object.keys(data).map((key) => {
-        return (
-          <div key={key}>
-            {key} : {data[key]}
-          </div>
-        );
-      })}
+      <h2>{name}</h2>
+      <h4>{level}</h4>
+      <h5>{exp}</h5>
     </div>
   );
 }
