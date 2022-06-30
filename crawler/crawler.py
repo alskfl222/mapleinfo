@@ -38,14 +38,8 @@ today_date = get_kst_today()
 
 
 current_path = Path.cwd() if ENV == "local" else Path.home() / "mapleinfo" / "crawler"
-data_dir = current_path.parent / "data"
-data_dir.mkdir(exist_ok=True)
-year_dir = data_dir / f"{today_date.strftime('%Y')}"
-year_dir.mkdir(exist_ok=True)
-month_dir = year_dir / f"{today_date.strftime('%m')}"
-month_dir.mkdir(exist_ok=True)
-img_dir = month_dir / "image"
-img_dir.mkdir(exist_ok=True)
+image_dir = current_path.parent / "image-server" / "static" / "images"
+image_dir.mkdir(exist_ok=True)
 
 
 chars_path = current_path / 'chars.csv'
