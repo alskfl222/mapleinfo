@@ -6,6 +6,7 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -18,14 +19,24 @@ export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor() {}
+  
+  @WebSocketServer()
+  server: Server;
 
-  @SubscribeMessage('changeChar')
-  handleEvent(
-    @MessageBody() data: { char: string },
+  @SubscribeMessage('healthCheck')
+  healthCheck(
     @ConnectedSocket() client: Socket,
   ): void {
+    console.log('HEALTH CHECK')
+    client.emit('healthCheckRes', { msg: 'ok' });
+  }
+
+  @SubscribeMessage('changeChar')
+  changeChar(
+    @MessageBody() data: { char: string },
+  ): void {
     console.log(data);
-    client.emit('setChar', { char: data.char });
+    this.server.emit('setChar', { char: data.char })
   }
 
   afterInit(server: Server) {
