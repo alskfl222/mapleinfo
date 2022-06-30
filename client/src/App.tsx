@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import axios from 'axios';
-import useSWR from 'swr';
 import Viewer from './components/Viewer';
 
 const socket = io('http://localhost:4004/mapleinfo');
-const fetcher = (uri: string) => axios.get(uri).then((res) => res.data());
 
 function App() {
   const [input, setInput] = useState('');
   const [char, setChar] = useState('네리에리네');
-  const [charData, setCharData] = useState({ status: 'init' });
 
   useEffect(() => {
     socket.on('connect', () => {
