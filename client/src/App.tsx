@@ -1,33 +1,49 @@
-import { useState, useEffect } from 'react'
-import { io } from "socket.io-client";
+import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:4004/mapleinfo');
 
 function App() {
-  const [char, setChar] = useState('네리에리네')
-  const socket = io('http://localhost:4004/mapleinfo')
+  const [input, setInput] = useState('');
+  const [char, setChar] = useState('네리에리네');
 
   useEffect(() => {
     socket.on('connect', () => {
-      console.log(socket.id)
-    })
-    socket.on('changeChar', (data) => {
-      setChar(data.char)
-    })
-  }, [])
+      console.log(socket.id);
+    });
+    socket.on('setChar', (data) => {
+      setChar(data.char);
+    });
+    return () => {
+      socket.off('connect')
+      socket.off('setChar')
+    }
+  }, []);
 
   useEffect(() => {
-    console.log(char)
-  }, [char])
+    console.log(char);
+  }, [char]);
 
+  const changeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
   const changeChar = () => {
-    setChar('프레아루쥬')
-  }
+    socket.emit('changeChar', { char: input });
+  };
 
   return (
     <div>
-      client test
-      <button onClick={changeChar}></button>
+      <input
+        value={input}
+        onChange={changeInput}
+        placeholder='바꿀 캐릭터 이름'
+      />{' '}
+      <br />
+      {input} <br />
+      {char} <br />
+      <button onClick={changeChar}>클릭</button>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -19,21 +19,24 @@ export class AppGateway
 {
   constructor() {}
 
-  @SubscribeMessage('hello')
-  handleEvent(@MessageBody() data: string, @ConnectedSocket() client: Socket): string {
-    console.log(client)
-    return data;
+  @SubscribeMessage('changeChar')
+  handleEvent(
+    @MessageBody() data: { char: string },
+    @ConnectedSocket() client: Socket,
+  ): void {
+    console.log(data);
+    client.emit('setChar', { char: data.char });
   }
 
   afterInit(server: Server) {
-    console.log('INIT SOCKET.IO')
+    console.log('INIT SOCKET.IO');
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`CLIENT DISCONNECTED: ${client.id}`)
+    console.log(`CLIENT DISCONNECTED: ${client.id}`);
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(`CLIENT CONNECTED: ${client.id}`)
+    console.log(`CLIENT CONNECTED: ${client.id}`);
   }
 }
