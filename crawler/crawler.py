@@ -96,7 +96,7 @@ def get_char_stat(char):
   class_type = char_stat_page_soup.select_one(".char_info > dl:nth-child(2) > dd").text.split("/")[1]
   exp = "".join(re.findall("\d+", char_stat_page_soup.select_one(".char_info > div.level_data > span:nth-child(1)").text))
   img = char_stat_page_soup.select_one(".char_img > div > img")["src"]
-  img_path = img_dir / f"{today_date.strftime('%Y-%m-%d')}_{char}.png"
+  img_path = image_dir / f"{today_date.strftime('%Y-%m-%d')}_{char}.png"
   if not os.path.isfile(str(img_path)):
     urllib.request.urlretrieve(img, str(img_path))
     print(f'GET {char} IMAGE')

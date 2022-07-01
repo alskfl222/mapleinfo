@@ -1,17 +1,15 @@
-import axios from 'axios';
-import useSWR from 'swr';
+import { useChar } from "../hooks/useChar";
 
-const fetcher = (uri: string) => axios.get(uri).then((res) => res.data);
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL
 
 export default function Viewer(props: { char: string }) {
   const { char } = props;
-  const { data, error } = useSWR(`http://localhost:4000/char/${char}`, fetcher);
+  const { data, isLoading, error } = useChar(char);
   if (error) {
     console.log(error);
     return <div>ERROR</div>;
   }
-  if (!data) {
+  if (isLoading) {
     return <div>LOADING...</div>;
   }
   const { name, level, exp, date } = data;
