@@ -6,10 +6,7 @@ import { AppService } from '../services/app.service';
 import { AppGateway } from 'src/gateways/app.gateway';
 
 @Module({
-  imports: [
-    ConfigurationModule,
-    CharModule,
-  ],
+  imports: [ConfigurationModule, CharModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })
