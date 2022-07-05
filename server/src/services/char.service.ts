@@ -19,11 +19,32 @@ export class CharService {
         { sort: { date: -1 }, projection: { _id: 0 } },
       );
       await client.close();
-      return result
+      return result;
     } catch (err) {
       await client.close();
       console.log('ERROR');
-      return 'ERROR'
+      return 'ERROR';
+    }
+  }
+  async getCharChange(char: string): Promise<any> {
+    try {
+      await client.connect();
+      const db = client.db('MapleStat');
+      const col = db.collection(char);
+      const cursor = col.find(
+        {},
+        { sort: { date: -1 }, projection: { _id: 0 }, limit: 2 },
+      );
+      const result = [];
+      await cursor.forEach((doc) => {
+        result.push(doc);
+      });
+      await client.close();
+      return result;
+    } catch (err) {
+      await client.close();
+      console.log('ERROR');
+      return 'ERROR';
     }
   }
 }
