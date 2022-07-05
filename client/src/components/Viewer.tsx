@@ -1,9 +1,10 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useChar } from '../hooks/useChar';
 
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
 
-export default function Viewer(props: { char: string }) {
+export default function Viewer(props: { char: string, type: string }) {
   const { char } = props;
   const { data, isLoading, error } = useChar(char);
   if (error) {

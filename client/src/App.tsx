@@ -6,6 +6,7 @@ const socket = io('http://localhost:4004/mapleinfo');
 
 function App() {
   const [input, setInput] = useState('');
+  const [type, setType] = useState('stat')
   const [char, setChar] = useState('네리에리네');
 
   useEffect(() => {
@@ -14,6 +15,10 @@ function App() {
     });
     socket.on('setChar', (data) => {
       setChar(data.char);
+    });
+    socket.on('setType', (data) => {
+      console.log(data)
+      setType('change');
     });
     return () => {
       socket.off('connect');
@@ -27,6 +32,10 @@ function App() {
   const changeChar = () => {
     socket.emit('changeChar', { char: input });
   };
+  const changeType = () => {
+    socket.emit('changeType', { type: 'change' });
+  };
+
 
   return (
     <div>
@@ -39,7 +48,8 @@ function App() {
       {input} <br />
       {char} <br />
       <button onClick={changeChar}>클릭</button>
-      <Viewer char={char} />
+      <button onClick={changeType}>타입 변경</button>
+      <Viewer char={char} type={type} />
     </div>
   );
 }
