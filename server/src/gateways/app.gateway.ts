@@ -39,6 +39,14 @@ export class AppGateway
     this.server.emit('setChar', { char: data.char })
   }
 
+  @SubscribeMessage('changeType')
+  changeType(
+    @MessageBody() data: { type: string },
+  ): void {
+    console.log(data);
+    this.server.emit('setType', { type: data.type })
+  }
+
   afterInit(server: Server) {
     console.log('INIT SOCKET.IO');
   }

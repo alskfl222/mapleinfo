@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import Viewer from './components/Viewer';
+import Viewer from './pages/Viewer';
 
 const socket = io('http://localhost:4004/mapleinfo');
 
@@ -25,6 +25,12 @@ function App() {
       socket.off('setChar');
     };
   }, []);
+
+  useEffect(() => {
+    if (type !== 'stat') {
+      setTimeout(() => setType('stat'), 10000)
+    }
+  }, [type])
 
   const changeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
