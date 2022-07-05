@@ -6,11 +6,11 @@ export class CharController {
   constructor(private readonly charService: CharService) {}
 
   @Get(':char')
-  getChar(@Param() params, @Res() res): Promise<any> {
+  async getChar(@Param() params, @Res() res): Promise<any> {
     const char = params.char;
-    const result = this.charService.getChar(char);
+    const result = await this.charService.getChar(char);
     if (typeof result === 'object') {
-      if (Object.keys(result).length !== 0) {
+      if (result !== null) {
         return res.status(200).send(result);
       } else {
         return res.status(404).send('not found')

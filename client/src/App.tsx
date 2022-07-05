@@ -1,45 +1,47 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+import Viewer from './components/Viewer';
+
+const socket = io('http://localhost:4004/mapleinfo');
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [input, setInput] = useState('');
+  const [char, setChar] = useState('네리에리네');
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(socket.id);
+    });
+    socket.on('setChar', (data) => {
+      setChar(data.char);
+    });
+    return () => {
+      socket.off('connect');
+      socket.off('setChar');
+    };
+  }, []);
+
+  const changeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+  const changeChar = () => {
+    socket.emit('changeChar', { char: input });
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+    <div>
+      <input
+        value={input}
+        onChange={changeInput}
+        placeholder='바꿀 캐릭터 이름'
+      />{' '}
+      <br />
+      {input} <br />
+      {char} <br />
+      <button onClick={changeChar}>클릭</button>
+      <Viewer char={char} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
