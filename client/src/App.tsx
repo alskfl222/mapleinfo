@@ -18,6 +18,7 @@ function App() {
     });
     socket.on('setType', (data) => {
       console.log(data)
+      console.log(char)
       setType('change');
     });
     return () => {
@@ -39,6 +40,7 @@ function App() {
     socket.emit('changeChar', { char: input });
   };
   const changeType = () => {
+    console.log(char)
     socket.emit('changeType', { type: 'change' });
   };
 

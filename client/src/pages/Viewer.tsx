@@ -1,3 +1,4 @@
+
 import styled from 'styled-components';
 import CharStat from '../components/CharStat';
 import CharExpChange from '../components/CharExpChange';
@@ -7,7 +8,7 @@ const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
 
 export default function Viewer(props: { char: string; type: string }) {
   const { char, type } = props;
-  const { data, isLoading, error } = useChar(char, type);
+  const { data, isLoading, error } = useChar(char);
 
   if (error) {
     console.log(error);
@@ -43,6 +44,7 @@ const Container = styled.div`
   color: white;
   font-weight: 700;
   text-shadow: 0px 0px 4px black;
+  overflow: hidden;
 `;
 
 const CharImg = styled.img`

@@ -35,6 +35,7 @@ export class CharController {
         const afterExp = Number(result[0].exp);
         const afterExpPer = afterExp / expData[afterLv - 1].exp;
         const data = {
+          name: char,
           date: result[0].date,
           expChange: (expData[afterLv - 1].acc_exp + afterExp) - (expData[beforeLv - 1].acc_exp + beforeExp),
           expPerChange: afterLv + afterExpPer - (beforeLv + beforeExpPer),
