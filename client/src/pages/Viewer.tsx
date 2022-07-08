@@ -1,4 +1,6 @@
-import { useRecoilValue } from 'recoil';
+import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import { io } from 'socket.io-client';
 import styled from 'styled-components';
 import CharStat from '../components/CharStat';
 import CharExpChange from '../components/CharExpChange';
@@ -6,11 +8,29 @@ import { useChar } from '../hooks/useChar';
 import { charState, typeState } from '../store';
 
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
+const socket = io('http://localhost:4004/mapleinfo');
 
 export default function Viewer() {
-  const type = useRecoilValue(typeState);
-  const char = useRecoilValue(charState);
+  const [char, setChar] = useRecoilState(charState);
+  const [type, setType] = useRecoilState(typeState);
   const { data, isLoading, error } = useChar(char);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(socket.id);
+    });
+    socket.on('setChar', (data) => {
+      setChar(data.char);
+    });
+    socket.on('setType', (data) => {
+      setType(data.type);
+    });
+    return () => {
+      socket.off('connect');
+      socket.off('setChar');
+      socket.off('setType');
+    };
+  }, []);
 
   if (error) {
     return <div>ERROR</div>;
