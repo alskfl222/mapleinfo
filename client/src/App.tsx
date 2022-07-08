@@ -29,7 +29,7 @@ function App() {
 
   useEffect(() => {
     if (type !== 'stat') {
-      setTimeout(() => setType('stat'), 10000)
+      setTimeout(() => setType('stat'), 2000)
     }
   }, [type])
 
