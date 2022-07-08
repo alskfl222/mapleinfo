@@ -28,10 +28,10 @@ export class CharController {
     const result = await this.charService.getCharChange(char);
     if (Array.isArray(result)) {
       if (result.length === 2) {
-        const beforeLv = result[1].level;
+        const beforeLv = Number(result[1].level);
         const beforeExp = Number(result[1].exp);
         const beforeExpPer = beforeExp / expData[beforeLv - 1].exp;
-        const afterLv = result[0].level;
+        const afterLv = Number(result[0].level);
         const afterExp = Number(result[0].exp);
         const afterExpPer = afterExp / expData[afterLv - 1].exp;
         const data = {
