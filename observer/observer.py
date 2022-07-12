@@ -30,12 +30,6 @@ def health_check(data):
 client.emit('healthCheck', namespace='/mapleinfo')
 
 
-client.emit('changeChar', data={ 'char' : '챠르마' }, namespace='/mapleinfo')
-
-
-# VJtEKlOrH_U
-
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service

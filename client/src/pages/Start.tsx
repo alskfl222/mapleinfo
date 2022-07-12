@@ -1,4 +1,3 @@
-
 export default function Start() {
   return (
     <div>
@@ -6,5 +5,5 @@ export default function Start() {
       <input type='text' />
       <button type='submit'>입력</button>
     </div>
-  )
+  );
 }
