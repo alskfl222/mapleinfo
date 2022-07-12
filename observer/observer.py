@@ -1,10 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import sys
+import os
+import traceback
+import time
+import datetime
 import socketio
+import pymongo
+import certifi
+from dotenv import load_dotenv
+
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
+print(sys.argv[1])
+load_dotenv()
 client = socketio.Client()
+print("WEBSOCKET CLIENT INIT")
 
 
 class MapleinfoNamespace(socketio.ClientNamespace):
@@ -18,9 +37,11 @@ class MapleinfoNamespace(socketio.ClientNamespace):
         print("I'm disconnected!")
 
 
+WS_SERVER = os.getenv('WS_SERVER')
+print(WS_SERVER)
 client.register_namespace(MapleinfoNamespace('/mapleinfo'))
-client.connect('http://localhost:4004', namespaces=['/mapleinfo'])
-
+client.connect(WS_SERVER, namespaces=['/mapleinfo'])
+print("WEBSOCKET CONNECTED")
 
 @client.on('healthCheckRes', namespace='/mapleinfo')
 def health_check(data):
@@ -30,14 +51,6 @@ def health_check(data):
 client.emit('healthCheck', namespace='/mapleinfo')
 
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-
 service = Service(ChromeDriverManager().install())
 user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
 options = webdriver.ChromeOptions()
@@ -46,27 +59,26 @@ options.add_argument(f"user-agent: {user_agent}")
 driver = webdriver.Chrome(service=service, options=options)
 driver.set_window_size(1280, 1024)
 driver.minimize_window()
+print("DRIVER INIT")
 
 
-import os
-import datetime
-import pymongo
-import certifi
-from dotenv import load_dotenv
-
-load_dotenv()
-ENV = os.getenv("ENV")
-DBID = os.getenv("MONGODB_ID")
-DBPW = os.getenv("MONGODB_PW")
-atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
-dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
+try:
+  ENV = os.getenv("ENV")
+  DBID = os.getenv("MONGODB_ID")
+  DBPW = os.getenv("MONGODB_PW")
+  atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
+  dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
+  print("DB CONNECTED")
+except:
+  print("FAIL: DB CONNECT")
+  raise
 
 
 db = dbclient["chatlog"]
 col = db[datetime.datetime.now().strftime("%Y-%m-%d")]
 
 
-STREAMING_ID = 'VJtEKlOrH_U'
+STREAMING_ID = sys.argv[1]
 CHAT_ROOM = f"https://studio.youtube.com/live_chat?v={STREAMING_ID}"
 
 
@@ -81,15 +93,14 @@ def logging_chat(col, chats):
   col.insert_many(rows)
 
 
-import time
-import traceback
-from bs4 import BeautifulSoup
 prev_chat = get_prev_chat()
 command_list = ['캐릭터']
+print('OBSERVING START')
 while True:
   try:
     driver.get(CHAT_ROOM)
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div#chat.yt-live-chat-renderer")))
+    client.emit('aliveObserver', namespace='/mapleinfo')
     soup = BeautifulSoup(driver.page_source, "lxml")
     message_divs = [(x.select_one("#timestamp").text, x.select_one("#author-name").text, x.select_one("#message").text) 
                     for x in soup.select("yt-live-chat-text-message-renderer")]
@@ -103,9 +114,11 @@ while True:
         if queue:
           print(queue)
           for i in queue:
-            client.emit('changeChar', data={ 'char' : i[2].split(' ')[1] }, namespace='/mapleinfo')
-            time.sleep(1)
-          
+            try:
+              client.emit('changeChar', data={ 'char' : i[2].split(' ')[1] }, namespace='/mapleinfo')
+            except:
+              pass
+            time.sleep(1)          
     time.sleep(3)
   except:
     print('STOP')
