@@ -9,7 +9,7 @@ export default function CharStat(props: { char: string; type: string }) {
   if (error) {
     return (
       <CharDesc>
-        <span>ERROR</span>
+        <span>RETRY...</span>
       </CharDesc>
     );
   }
