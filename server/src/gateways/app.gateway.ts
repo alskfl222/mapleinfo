@@ -58,7 +58,7 @@ export class AppGateway
 
       observer.on('exit', (code) => {
         console.log(`OBSERVER EXIT with CODE ${code}`);
-        this.observer = undefined
+        this.observer = undefined;
         this.server.emit('stopObserverRes');
       });
     } else {
@@ -85,9 +85,9 @@ export class AppGateway
     this.server.emit('setType', this.viewState.type);
   }
 
-  @SubscribeMessage('changeChar')
-  changeChar(@MessageBody() data: { char: string }): void {
-    const char = data.char;
+  @SubscribeMessage('changeView')
+  changeView(@MessageBody() data: { char: string; type: string }): void {
+    const { char, type } = data;
     if (
       [
         '네리에리네',
@@ -109,24 +109,14 @@ export class AppGateway
         '날림v나린',
         '미르나르미',
         '날림v세탁',
-      ].includes(char) &&
-      char !== this.viewState.char
+      ].includes(char)
     ) {
-      this.viewState = { ...this.viewState, char };
+      this.viewState = { char, type };
       console.log(this.viewState);
-      this.server.emit('setChar', { char });
+      this.server.emit('setView', this.viewState);
     } else {
       console.log('NOT MY CHARS');
-      this.server.emit('noChar');
     }
-  }
-
-  @SubscribeMessage('changeType')
-  changeType(@MessageBody() data: { type: string }): void {
-    const type = data.type;
-    this.viewState = { ...this.viewState, type };
-    console.log(this.viewState);
-    this.server.emit('setType', { type });
   }
 
   afterInit(server: Server) {

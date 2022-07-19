@@ -6,7 +6,6 @@ export default function CharExpChange(props: { char: string; type: string }) {
   const { char, type } = props;
   const { data, isLoading, error } = useCharDesc(char, type);
   if (error) {
-    console.log(error);
     return (
       <CharDesc>
         <span>ERROR</span>

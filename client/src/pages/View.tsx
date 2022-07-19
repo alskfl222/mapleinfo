@@ -19,17 +19,18 @@ export default function View() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
-    socket.on('setChar', (data) => {
-      setChar(data.char);
-    });
-    socket.on('setType', (data) => {
-      setType(data.type);
+    socket.on('setView', (data) => {
+      if (char !== data.char) {
+        setChar(data.char);
+      }
+      if (type !== data.type) {
+        setType(data.type)
+      }
     });
 
     return () => {
       socket.off('connect');
-      socket.off('setChar');
-      socket.off('setType');
+      socket.off('setView');
     };
   }, []);
 
