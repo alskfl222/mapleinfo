@@ -42,28 +42,31 @@ export class AppGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { streamId: string },
   ): void {
-    const streamId = data.streamId;
-    console.log('INIT OBSERVER');
-    client.emit('initObserverRes', { msg: 'init' });
-    const observer = spawn(
-      'python',
-      ['../observer/observer.py', `${streamId}`],
-      { stdio: 'inherit' },
-    );
-    this.observer = observer;
+    if (!this.observer) {
+      const streamId = data.streamId;
+      console.log('INIT OBSERVER');
+      client.emit('initObserverRes', { msg: 'init' });
+      const observer = spawn('python', [
+        '../observer/observer.py',
+        `${streamId}`,
+      ]);
+      this.observer = observer;
 
-    observer.stdout.on('data', (data) => {
-      console.log(data.toString());
-    });
+      observer.stdout.on('data', (data) => {
+        console.log(data.toString());
+      });
 
-    observer.on('exit', (code) => {
-      console.log(`OBSERVER EXIT with CODE ${code}`);
-    });
+      observer.on('exit', (code) => {
+        console.log(`OBSERVER EXIT with CODE ${code}`);
+        this.observer = undefined
+        this.server.emit('stopObserverRes');
+      });
+    } else {
+    }
   }
 
   @SubscribeMessage('aliveObserver')
   aliveObserver(): void {
-    console.log('aliveObserver');
     this.server.emit('aliveObserverRes');
   }
 

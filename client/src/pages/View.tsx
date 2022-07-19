@@ -90,7 +90,7 @@ const Container = styled.div`
 
 const CharImg = styled.img`
   position: relative;
-  top: -2rem;
+  top: -1rem;
   left: -1rem;
   z-index: 1;
   width: 360px;

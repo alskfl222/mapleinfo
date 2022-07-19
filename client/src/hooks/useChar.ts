@@ -5,6 +5,9 @@ const fetcher = (uri: string) => axios.get(uri).then((res) => res.data);
 const CHAR_API_URL = import.meta.env.VITE_CHAR_API_URL;
 
 export function useChar(char: string) {
+  if (char === '') {
+    return { isLoading: true };
+  }
   const { data, error } = useSWR(`${CHAR_API_URL}/${char}`, fetcher);
   return {
     data: data,
@@ -14,6 +17,9 @@ export function useChar(char: string) {
 }
 
 export function useCharDesc(char: string, type: string) {
+  if (char === '') {
+    return { isLoading: true };
+  }
   const { data, error } = useSWR(`${CHAR_API_URL}/${char}/${type}`, fetcher);
   return {
     data: data,
@@ -21,5 +27,3 @@ export function useCharDesc(char: string, type: string) {
     error: error,
   };
 }
-
-
