@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 const socket = io('http://localhost:4004/mapleinfo');
 
 export default function Start() {
+  // lqT9PijAHUk
   const [input, setInput] = useState('');
   const [isAlive, setIsAlive] = useState(false);
 

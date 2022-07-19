@@ -10,18 +10,15 @@ export default function CharStat(props: { char: string; type: string }) {
 
   return (
     <CharDesc>
-      <span>Lv. {level}</span>
-      <span>{percentStr}</span>
+      <FirstSpan>Lv. {level}</FirstSpan>
+      <SecondSpan>{percentStr}</SecondSpan>
     </CharDesc>
   );
 }
 
 const CharDesc = styled.div`
-  position: absolute;
-  bottom: 4.5rem;
   display: flex;
-  gap: 1rem;
-  /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+  flex-direction: column;
   animation-name: appear-in-out;
   animation-duration: .5s;
   animation-direction: normal;
@@ -35,8 +32,11 @@ const CharDesc = styled.div`
       opacity: 1;
     }
   }
-
-  span {
-    font-size: 1.2rem;
-  }
 `;
+
+const FirstSpan = styled.span`
+  font-size: 2rem;
+`
+const SecondSpan = styled.span`
+  font-size: 1.5rem;
+`

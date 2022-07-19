@@ -19,11 +19,11 @@ export default function Viewer() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
-    socket.emit('getViewState')
+    socket.emit('getViewState');
     socket.on('setViewState', (data) => {
-      setChar(data.char)
-      setType(data.type)
-    })
+      setChar(data.char);
+      setType(data.type);
+    });
     socket.on('setChar', (data) => {
       setChar(data.char);
     });
@@ -32,7 +32,7 @@ export default function Viewer() {
     });
     return () => {
       socket.off('connect');
-      socket.off('setViewState')
+      socket.off('setViewState');
       socket.off('setChar');
       socket.off('setType');
     };
@@ -49,39 +49,62 @@ export default function Viewer() {
   const imageUrl = `${IMAGE_SERVER_URL}/${dateString}_${name}.png`;
 
   return (
-    <Container>
-      <CharImg src={imageUrl} alt='image' />
-      <CharName>{name}</CharName>
-      {type === 'stat' && <CharStat char={char} type={type}></CharStat>}
-      {type === 'change' && (
-        <CharExpChange char={char} type={type}></CharExpChange>
-      )}
-    </Container>
+    <Background>
+      <Container>
+        <CharImg src={imageUrl} alt='image' />
+        <CharDescContainer>
+          <CharName>{name}</CharName>
+          {type === 'stat' && <CharStat char={char} type={type}></CharStat>}
+          {type === 'change' && (
+            <CharExpChange char={char} type={type}></CharExpChange>
+          )}
+        </CharDescContainer>
+      </Container>
+    </Background>
   );
 }
 
-const Container = styled.div`
+const Background = styled.div`
   position: relative;
   z-index: 1;
-  width: 360px;
-  height: 360px;
-  display: flex;
-  justify-content: center;
-  background-color: #ccc;
+  width: 1920px;
+  height: 1080px;
   color: white;
   font-weight: 700;
   text-shadow: 0px 0px 4px black;
   overflow: hidden;
 `;
 
+const Container = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  width: 640px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  background-color: #555c;
+
+`;
+
 const CharImg = styled.img`
   position: relative;
-  top: -4rem;
-  width: 100%;
+  top: -2rem;
+  left: -1rem;
+  z-index: 1;
+  width: 360px;
+  height: 360px;
+`;
+
+const CharDescContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
 const CharName = styled.span`
-  position: absolute;
-  bottom: 6rem;
-  font-size: 2rem;
+  position: relative;
+  top: 0rem;
+  font-size: 3rem;
 `;
