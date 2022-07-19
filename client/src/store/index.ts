@@ -12,7 +12,7 @@ export const typeState = atom({
 
 export const charState = atom({
   key: 'char',
-  default: '',
+  default: '네리에리네',
 })
 
 export const observerState = atom({

@@ -10,7 +10,7 @@ import { charState, typeState } from '../store';
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
 const socket = io('http://localhost:4004/mapleinfo');
 
-export default function Viewer() {
+export default function View() {
   const [char, setChar] = useRecoilState(charState);
   const [type, setType] = useRecoilState(typeState);
   const { data, isLoading, error } = useChar(char);
@@ -19,30 +19,38 @@ export default function Viewer() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
-    socket.emit('getViewState');
-    socket.on('setViewState', (data) => {
-      setChar(data.char);
-      setType(data.type);
+    socket.on('setView', (data) => {
+      if (char !== data.char) {
+        setChar(data.char);
+      }
+      if (type !== data.type) {
+        setType(data.type);
+      }
     });
-    socket.on('setChar', (data) => {
-      setChar(data.char);
-    });
-    socket.on('setType', (data) => {
-      setType(data.type);
-    });
+
     return () => {
       socket.off('connect');
-      socket.off('setViewState');
-      socket.off('setChar');
-      socket.off('setType');
+      socket.off('setView');
     };
   }, []);
 
   if (error) {
-    return <div>ERROR</div>;
+    return (
+      <Background>
+        <Container>
+          <Message>RETRY...</Message>
+        </Container>
+      </Background>
+    );
   }
   if (isLoading) {
-    return <div>LOADING...</div>;
+    return (
+      <Background>
+        <Container>
+          <Message>LOADING...</Message>
+        </Container>
+      </Background>
+    );
   }
   const { name, date } = data;
   const dateString = date.split('T')[0];
@@ -85,19 +93,25 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   background-color: #555c;
+`;
 
+const Message = styled.span`
+  width: 100%;
+  text-align: center;
 `;
 
 const CharImg = styled.img`
   position: relative;
-  top: -1rem;
-  left: -1rem;
+  top: -1.5rem;
+  left: -2rem;
   z-index: 1;
   width: 360px;
   height: 360px;
 `;
 
 const CharDescContainer = styled.div`
+  position: relative;
+  left: -3rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;

@@ -94,7 +94,11 @@ def logging_chat(col, chats):
 
 
 prev_chat = get_prev_chat()
-command_list = ['캐릭터']
+command = {
+  '캐릭터': {
+    '스탯': 'changeView'
+  }
+}
 print('OBSERVING START')
 while True:
   try:
@@ -108,17 +112,13 @@ while True:
     if now_chats:
       logging_chat(col, now_chats)
       prev_chat.extend(now_chats)
-      new_commands = [chat for chat in now_chats if chat[2].split(' ')[0][0] == '!']
-      if new_commands:
-        queue = [chat for chat in new_commands if chat[2].split(' ')[0][1:] in command_list]
-        if queue:
-          print(queue)
-          for i in queue:
-            try:
-              client.emit('changeChar', data={ 'char' : i[2].split(' ')[1] }, namespace='/mapleinfo')
-            except:
-              pass
-            time.sleep(1)          
+      new_commands = [chat for chat in now_chats if chat[2].split(' ')[0][0] == '!' and chat[2].split(' ')[0][1:] in command.keys()]
+      for i in new_commands:
+        try:
+          client.emit('changeChar', data={ 'char' : i[2].split(' ')[1] }, namespace='/mapleinfo')
+        except:
+          pass
+        time.sleep(1)          
     time.sleep(3)
   except:
     print('STOP')

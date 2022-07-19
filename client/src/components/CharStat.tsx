@@ -4,10 +4,26 @@ import { convertPerToStr } from '../utils';
 
 export default function CharStat(props: { char: string; type: string }) {
   const { char } = props;
-  const { data } = useChar(char);
+  const { data, isLoading, error } = useChar(char);
+
+  if (error) {
+    return (
+      <CharDesc>
+        <span>RETRY...</span>
+      </CharDesc>
+    );
+  }
+  if (isLoading) {
+    return (
+      <CharDesc>
+        <span>LOADING...</span>
+      </CharDesc>
+    );
+  }
+
   const { level, exp_per } = data;
   const percentStr = convertPerToStr(exp_per);
-
+  
   return (
     <CharDesc>
       <FirstSpan>Lv. {level}</FirstSpan>
