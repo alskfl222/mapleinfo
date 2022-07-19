@@ -22,7 +22,7 @@ export class CharService {
       return result;
     } catch (err) {
       await client.close();
-      console.log('ERROR');
+      console.log(err);
       return 'ERROR';
     }
   }
@@ -43,7 +43,7 @@ export class CharService {
       return result;
     } catch (err) {
       await client.close();
-      console.log('ERROR');
+      console.log(err);
       return 'ERROR';
     }
   }

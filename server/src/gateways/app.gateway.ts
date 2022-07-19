@@ -12,7 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { ChildProcess, spawn } from 'child_process';
 
 @WebSocketGateway(4004, {
-  transports: ['polling'],
+  // transports: ['polling'],
   namespace: 'mapleinfo',
   cors: true,
 })
@@ -25,6 +25,11 @@ export class AppGateway
   server: Server;
 
   observer: ChildProcess | undefined;
+
+  viewState: { char: string; type: string } = {
+    char: '네리에리네',
+    type: 'stat',
+  };
 
   @SubscribeMessage('healthCheck')
   healthCheck(@ConnectedSocket() client: Socket): void {
@@ -45,7 +50,7 @@ export class AppGateway
       ['../observer/observer.py', `${streamId}`],
       { stdio: 'inherit' },
     );
-    this.observer = observer
+    this.observer = observer;
 
     observer.stdout.on('data', (data) => {
       console.log(data.toString());
@@ -57,8 +62,7 @@ export class AppGateway
   }
 
   @SubscribeMessage('aliveObserver')
-  aliveObserver(
-  ): void {
+  aliveObserver(): void {
     console.log('aliveObserver');
     this.server.emit('aliveObserverRes');
   }
@@ -66,22 +70,59 @@ export class AppGateway
   @SubscribeMessage('stopObserver')
   stopObserver(): void {
     if (this.observer) {
-      this.observer.kill('SIGINT')
+      this.observer.kill('SIGINT');
       this.observer = undefined;
       this.server.emit('stopObserverRes');
     }
   }
 
+  @SubscribeMessage('getViewState')
+  getViewState(): void {
+    this.server.emit('setViewState', this.viewState);
+  }
+
   @SubscribeMessage('changeChar')
   changeChar(@MessageBody() data: { char: string }): void {
-    console.log(data);
-    this.server.emit('setChar', { char: data.char });
+    const char = data.char;
+    if (
+      [
+        '네리에리네',
+        '프레아루쥬',
+        '날림v나로',
+        '날림v카이저',
+        '챠르마',
+        '펭귄에코티슈',
+        '날림v네비',
+        '날림v숍2',
+        '날림v호영',
+        '날림v아델',
+        '날림v쌍칼',
+        '날림v주먹',
+        '날림v빙뢰',
+        '날림v아크',
+        '날림v카인',
+        '날림v히어로2',
+        '날림v나린',
+        '미르나르미',
+        '날림v세탁',
+      ].includes(char) &&
+      char !== this.viewState.char
+    ) {
+      this.viewState = { ...this.viewState, char };
+      console.log(this.viewState);
+      this.server.emit('setChar', { char });
+    } else {
+      console.log('NOT MY CHARS');
+      this.server.emit('noChar');
+    }
   }
 
   @SubscribeMessage('changeType')
   changeType(@MessageBody() data: { type: string }): void {
-    console.log(data);
-    this.server.emit('setType', { type: data.type });
+    const type = data.type;
+    this.viewState = { ...this.viewState, type };
+    console.log(this.viewState);
+    this.server.emit('setType', { type });
   }
 
   afterInit(server: Server) {

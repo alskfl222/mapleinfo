@@ -19,6 +19,11 @@ export default function Viewer() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
+    socket.emit('getViewState')
+    socket.on('setViewState', (data) => {
+      setChar(data.char)
+      setType(data.type)
+    })
     socket.on('setChar', (data) => {
       setChar(data.char);
     });
@@ -27,6 +32,7 @@ export default function Viewer() {
     });
     return () => {
       socket.off('connect');
+      socket.off('setViewState')
       socket.off('setChar');
       socket.off('setType');
     };

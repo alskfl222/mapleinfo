@@ -14,33 +14,50 @@ export default function ControllerDetail() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
+    socket.emit('getViewState');
+    socket.on('setViewState', (data) => {
+      setChar(data.char);
+      setType(data.type);
+    });
     return () => {
       socket.off('connect');
+      socket.off('setViewState');
     };
   }, []);
 
   useEffect(() => {
-    if (type !== 'stat') {
-      socket.emit('changeType', { type });
-      setTimeout(() => {
-        socket.emit('changeType', { type: 'stat' });
-        setType('stat')
-      }, 2000);
-    }
+    // if (type !== 'stat') {
+    socket.emit('changeType', { type });
+    // setTimeout(() => {
+    //   socket.emit('changeType', { type: 'stat' });
+    //   setType('stat');
+    // }, 5000);
+    // }
   }, [type]);
 
   useEffect(() => {
-    socket.emit('changeChar', { char: input })
+    if (input.length > 2) {
+      socket.emit('changeChar', { char: input });
+    }
   }, [char]);
 
   const changeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
   const changeChar = () => {
-    setChar(input)
+    if (input.length > 2) {
+      setChar(input);
+    }
   };
-  const changeType = () => {
-    setType('change');
+  const changeTypeChange = () => {
+    if (type !== 'change') {
+      setType('change');
+    }
+  };
+  const changeTypeStat = () => {
+    if (type !== 'stat') {
+      setType('stat');
+    }
   };
   return (
     <div>
@@ -53,7 +70,8 @@ export default function ControllerDetail() {
       char: {char} <br />
       type: {type} <br />
       <button onClick={changeChar}>클릭</button>
-      <button onClick={changeType}>타입 변경</button>
+      <button onClick={changeTypeStat}>스탯</button>
+      <button onClick={changeTypeChange}>변경</button>
     </div>
   );
 }
