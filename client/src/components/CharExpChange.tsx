@@ -25,20 +25,17 @@ export default function CharExpChange(props: { char: string; type: string }) {
   const percentStr = convertPerToStr(expPerChange);
   return (
     <CharDesc>
-      <span>{percentStr}</span>
-      <span>{expStr}</span>
+      <FirstSpan>{percentStr}</FirstSpan>
+      <SecondSpan>{expStr}</SecondSpan>
     </CharDesc>
   );
 }
 
 const CharDesc = styled.div`
-  position: absolute;
-  bottom: 4.5rem;
   display: flex;
-  gap: 1rem;
-  /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+  flex-direction: column;
   animation-name: appear-in-out;
-  animation-duration: .5s;
+  animation-duration: 0.5s;
   animation-direction: normal;
   animation-timing-function: ease-in-out;
 
@@ -50,8 +47,11 @@ const CharDesc = styled.div`
       opacity: 1;
     }
   }
-
-  span {
-    font-size: 1.2rem;
-  }
 `;
+
+const FirstSpan = styled.span`
+  font-size: 2rem;
+`
+const SecondSpan = styled.span`
+  font-size: 1.5rem;
+`

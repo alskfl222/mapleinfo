@@ -1,4 +1,4 @@
-import ControllerDetail from '../components/ControllerDetail';
+import ControllerDetail from '../components/ControlDetail';
 
 export default function Controller() {
   return (
