@@ -10,7 +10,7 @@ import { charState, typeState } from '../store';
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
 const socket = io('http://localhost:4004/mapleinfo');
 
-export default function Viewer() {
+export default function View() {
   const [char, setChar] = useRecoilState(charState);
   const [type, setType] = useRecoilState(typeState);
   const { data, isLoading, error } = useChar(char);
@@ -19,20 +19,15 @@ export default function Viewer() {
     socket.on('connect', () => {
       console.log(socket.id);
     });
-    socket.emit('getViewState');
-    socket.on('setViewState', (data) => {
-      setChar(data.char);
-      setType(data.type);
-    });
     socket.on('setChar', (data) => {
       setChar(data.char);
     });
     socket.on('setType', (data) => {
       setType(data.type);
     });
+
     return () => {
       socket.off('connect');
-      socket.off('setViewState');
       socket.off('setChar');
       socket.off('setType');
     };

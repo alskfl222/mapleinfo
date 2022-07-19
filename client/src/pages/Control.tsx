@@ -1,10 +1,10 @@
-import ControllerDetail from '../components/ControlDetail';
+import ControlDetail from '../components/ControlDetail';
 
-export default function Controller() {
+export default function Control() {
   return (
     <div>
       Controller
-      <ControllerDetail />
+      <ControlDetail />
     </div>
   );
 }

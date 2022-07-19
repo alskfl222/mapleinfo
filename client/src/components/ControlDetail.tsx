@@ -5,7 +5,7 @@ import { inputState, typeState, charState, observerState } from '../store';
 
 const socket = io('http://localhost:4004/mapleinfo');
 
-export default function ControllerDetail() {
+export default function ControlDetail() {
   const [streamId, setStreamId] = useState('')
   const [input, setInput] = useRecoilState(inputState);
   const [char, setChar] = useRecoilState(charState);

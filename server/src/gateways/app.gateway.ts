@@ -81,7 +81,8 @@ export class AppGateway
 
   @SubscribeMessage('getViewState')
   getViewState(): void {
-    this.server.emit('setViewState', this.viewState);
+    this.server.emit('setChar', this.viewState.char);
+    this.server.emit('setType', this.viewState.type);
   }
 
   @SubscribeMessage('changeChar')
@@ -136,7 +137,7 @@ export class AppGateway
     console.log(`CLIENT DISCONNECTED: ${client.id}`);
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
+  handleConnection(client: Socket) {
     console.log(`CLIENT CONNECTED: ${client.id}`);
   }
 }

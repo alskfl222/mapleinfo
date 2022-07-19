@@ -1,8 +1,8 @@
 import { RecoilRoot } from 'recoil';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Start from './pages/Start';
-import Controller from './pages/Control';
-import Viewer from './pages/View';
+import Control from './pages/Control';
+import View from './pages/View';
 
 function App() {
 
@@ -11,8 +11,8 @@ function App() {
       <BrowserRouter>
       <Routes>
         <Route path='/' element={<Start />} />
-        <Route path='/control' element={<Controller />} />
-        <Route path='/view' element={<Viewer />} />
+        <Route path='/control' element={<Control />} />
+        <Route path='/view' element={<View />} />
       </Routes>
       </BrowserRouter>
     </RecoilRoot>
