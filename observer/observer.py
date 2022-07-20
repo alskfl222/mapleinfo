@@ -10,20 +10,20 @@ import socketio
 import pymongo
 import certifi
 from dotenv import load_dotenv
+from pyvirtualdisplay import Display
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+import undetected_chromedriver.v2 as uc
+import chromedriver_autoinstaller
 
 
-print(sys.argv[1])
 load_dotenv()
 client = socketio.Client()
-print("WEBSOCKET CLIENT INIT")
 
 
 class MapleinfoNamespace(socketio.ClientNamespace):
@@ -38,10 +38,9 @@ class MapleinfoNamespace(socketio.ClientNamespace):
 
 
 WS_SERVER = os.getenv('WS_SERVER')
-print(WS_SERVER)
 client.register_namespace(MapleinfoNamespace('/mapleinfo'))
 client.connect(WS_SERVER, namespaces=['/mapleinfo'])
-print("WEBSOCKET CONNECTED")
+
 
 @client.on('healthCheckRes', namespace='/mapleinfo')
 def health_check(data):
@@ -51,27 +50,26 @@ def health_check(data):
 client.emit('healthCheck', namespace='/mapleinfo')
 
 
-service = Service(ChromeDriverManager().install())
-user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
-options = webdriver.ChromeOptions()
-options.add_argument(f"user-agent: {user_agent}")
+display = Display(visible=False, backend="xvfb")
+display.start()
+
+
+print(chromedriver_autoinstaller.install())
+options = uc.ChromeOptions()
 # options.add_argument("headless")
-driver = webdriver.Chrome(service=service, options=options)
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-gpu")
+options.add_argument("--single-process")
+options.add_argument("--disable-dev-shm-usage")
+driver = uc.Chrome(options=options)
 driver.set_window_size(1280, 1024)
-driver.minimize_window()
-print("DRIVER INIT")
 
 
-try:
-  ENV = os.getenv("ENV")
-  DBID = os.getenv("MONGODB_ID")
-  DBPW = os.getenv("MONGODB_PW")
-  atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
-  dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
-  print("DB CONNECTED")
-except:
-  print("FAIL: DB CONNECT")
-  raise
+ENV = os.getenv("ENV")
+DBID = os.getenv("MONGODB_ID")
+DBPW = os.getenv("MONGODB_PW")
+atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
+dbclient = pymongo.MongoClient(atlas_link, tlsCAFile=certifi.where())
 
 
 db = dbclient["chatlog"]
@@ -118,11 +116,12 @@ while True:
           client.emit('changeChar', data={ 'char' : i[2].split(' ')[1] }, namespace='/mapleinfo')
         except:
           pass
-        time.sleep(1)          
+        time.sleep(1)
     time.sleep(3)
   except:
     print('STOP')
     driver.quit()
+    display.stop()
     dbclient.close()
     client.disconnect()
     print(traceback.format_exc())
