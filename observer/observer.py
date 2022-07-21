@@ -39,10 +39,9 @@ client.emit('healthCheck', namespace='/mapleinfo')
 
 
 options = webdriver.ChromeOptions()
-driver = webdriver.Remote('http://172.17.0.3:4444', options=options)
+driver = webdriver.Remote('http://selenium:4444', options=options)
 
 
-ENV = os.getenv("ENV")
 DBID = os.getenv("MONGODB_ID")
 DBPW = os.getenv("MONGODB_PW")
 atlas_link = f"mongodb+srv://{DBID}:{DBPW}@info.syvdo.mongodb.net/info?retryWrites=true&w=majority"
