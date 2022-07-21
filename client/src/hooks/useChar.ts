@@ -20,7 +20,7 @@ export function useCharDesc(char: string, type: string) {
   if (char === '') {
     return { isLoading: true };
   }
-  const { data, error } = useSWR(`${API_URL}/${char}/${type}`, fetcher);
+  const { data, error } = useSWR(`${API_URL}/char/${char}/${type}`, fetcher);
   return {
     data: data,
     isLoading: !error && !data,
