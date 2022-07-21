@@ -1,0 +1,7 @@
+services:
+  server:
+    image: node:16.14.2-alpine
+
+
+
+
