@@ -1,16 +1,18 @@
 services:
   client:
-    image: alskfl222/sv-client:0.2
+    restart: always
+    image: alskfl222/sv-client:0.4
     ports:
       - 3000:3000
     volumes:
       - ./client/.env:/streamview/client/.env
 
   server:
-    image: alskfl222/sv-server:0.3
-    expose:
-      - '4000'
-      - '4004'
+    restart: always
+    image: alskfl222/sv-server:0.5
+    ports:
+      - 4000:4000
+      - 4004:4004
     volumes:
       - ./server/.env:/streamview/server/.env
       - ./observer/.env:/streamview/observer/.env
