@@ -46,7 +46,7 @@ export class AppGateway
       const streamId = data.streamId;
       console.log('INIT OBSERVER');
       client.emit('initObserverRes', { msg: 'init' });
-      const observer = spawn('python', [
+      const observer = spawn('python3', [
         '../observer/observer.py',
         `${streamId}`,
       ]);

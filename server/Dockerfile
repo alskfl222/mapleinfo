@@ -1,7 +1,6 @@
-FROM  alskfl222/sv-server:0.2
+FROM  alskfl222/sv-server:0.4
 
-RUN apk add git
-RUN git clone https://github.com/alskfl222/streamview.git
+RUN git pull
 
 WORKDIR /streamview/server
 
