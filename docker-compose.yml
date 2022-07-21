@@ -1,0 +1,26 @@
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/.env:/streamview/client/.env
+
+  server:
+    restart: always
+    build:
+      context: ./server
+    expose:
+      - '4000'
+      - '4004'
+    volumes:
+      - ./server/.env:/streamview/server/.env
+      - ./observer/.env:/streamview/observer/.env
+
+  selenium:
+    restart: always
+    image: selenium/standalone-chrome
+    expose:
+      - '4444'
+
