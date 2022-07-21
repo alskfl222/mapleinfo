@@ -8,7 +8,8 @@ import { useChar } from '../hooks/useChar';
 import { charState, typeState } from '../store';
 
 const IMAGE_SERVER_URL = import.meta.env.VITE_IMAGE_SERVER_URL;
-const socket = io('http://localhost:4004/mapleinfo');
+const WS_URL = import.meta.env.VITE_WS_URL;
+const socket = io(`${WS_URL}/mapleinfo`);
 
 export default function View() {
   const [char, setChar] = useRecoilState(charState);

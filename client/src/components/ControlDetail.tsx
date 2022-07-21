@@ -3,7 +3,8 @@ import { useRecoilState } from 'recoil';
 import { io } from 'socket.io-client';
 import { inputState, typeState, charState, observerState } from '../store';
 
-const socket = io('http://localhost:4004/mapleinfo');
+const WS_URL = import.meta.env.VITE_WS_URL;
+const socket = io(`${WS_URL}/mapleinfo`);
 
 export default function ControlDetail() {
   const [streamId, setStreamId] = useState('');
