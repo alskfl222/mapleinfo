@@ -9,7 +9,7 @@ services:
 
   server:
     restart: always
-    image: alskfl222/sv-server:0.7
+    image: alskfl222/sv-server:0.8
     ports:
       - 4000:4000
       - 4004:4004
