@@ -9,24 +9,25 @@ const client = new MongoClient(URI);
 
 @Injectable()
 export class CharService {
-  async getChar(char: string): Promise<any> {
+  async getChar(char: string) {
+    let res: any;
     try {
       await client.connect();
       const db = client.db('MapleStat');
       const col = db.collection(char);
-      const result = await col.findOne(
+      res = await col.findOne(
         {},
         { sort: { date: -1 }, projection: { _id: 0 } },
       );
-      await client.close();
-      return result;
     } catch (err) {
-      await client.close();
       console.log(err);
-      return 'ERROR';
+    } finally {
+      await client.close();
+      return res || 'ERROR';
     }
   }
-  async getCharChange(char: string): Promise<any> {
+  async getCharChange(char: string) {
+    let res: any[];
     try {
       await client.connect();
       const db = client.db('MapleStat');
@@ -35,16 +36,14 @@ export class CharService {
         {},
         { sort: { date: -1 }, projection: { _id: 0 }, limit: 2 },
       );
-      const result = [];
       await cursor.forEach((doc) => {
-        result.push(doc);
+        res.push(doc);
       });
-      await client.close();
-      return result;
     } catch (err) {
-      await client.close();
       console.log(err);
-      return 'ERROR';
+    } finally {
+      await client.close();
+      return res.length > 0 ? res : 'ERROR';
     }
   }
 }
