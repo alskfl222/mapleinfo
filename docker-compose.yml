@@ -1,7 +1,7 @@
 services:
   client:
     restart: always
-    image: alskfl222/sv-client:0.5
+    image: alskfl222/sv-client:0.6
     ports:
       - 3000:3000
     volumes:
