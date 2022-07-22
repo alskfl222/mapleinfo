@@ -8,7 +8,6 @@ RUN apk add git curl gcc musl-dev python3-dev libffi-dev openssl-dev
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-RUN pip3 install wheel
 RUN pip3 install python-socketio python-socketio['client'] pymongo \
     dnspython python-dotenv bs4 selenium
 

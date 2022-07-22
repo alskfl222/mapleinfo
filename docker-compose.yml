@@ -1,8 +1,7 @@
 services:
   client:
     restart: always
-    build:
-      context: ./client
+    image: alskfl222/sv-client:0.5
     ports:
       - 3000:3000
     volumes:
@@ -10,8 +9,7 @@ services:
 
   server:
     restart: always
-    build:
-      context: ./server
+    image: alskfl222/sv-server:0.7
     ports:
       - 4000:4000
       - 4004:4004
