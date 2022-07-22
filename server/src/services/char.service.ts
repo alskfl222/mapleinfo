@@ -22,7 +22,6 @@ export class CharService {
     } catch (err) {
       console.log(err);
     } finally {
-      await client.close();
       return res || 'ERROR';
     }
   }
@@ -42,7 +41,6 @@ export class CharService {
     } catch (err) {
       console.log(err);
     } finally {
-      await client.close();
       return res.length > 0 ? res : 'ERROR';
     }
   }
