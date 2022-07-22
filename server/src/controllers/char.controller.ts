@@ -10,7 +10,6 @@ export class CharController {
   async getChar(@Param() params, @Res() res): Promise<any> {
     const char = params.char;
     const result = await this.charService.getChar(char);
-    console.log(result)
     if (typeof result === 'object') {
       if (result !== null) {
         const expPer = result.exp / expData[result.level - 1].exp;
