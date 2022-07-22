@@ -21,12 +21,8 @@ export default function View() {
       console.log(socket.id);
     });
     socket.on('setView', (data) => {
-      if (char !== data.char) {
-        setChar(data.char);
-      }
-      if (type !== data.type) {
-        setType(data.type);
-      }
+      setChar((char) => data.char);
+      setType((type) => data.type);
     });
 
     return () => {
