@@ -27,7 +27,7 @@ export class CharService {
     }
   }
   async getCharChange(char: string) {
-    let res: any[];
+    let res: any[] = [];
     try {
       await client.connect();
       const db = client.db('MapleStat');
