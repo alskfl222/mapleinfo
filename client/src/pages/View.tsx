@@ -59,10 +59,8 @@ export default function View() {
         <CharImg src={imageUrl} alt='image' />
         <CharDescContainer>
           <CharName>{name}</CharName>
-          {type === 'stat' && <CharStat char={char} type={type}></CharStat>}
-          {type === 'change' && (
-            <CharExpChange char={char} type={type}></CharExpChange>
-          )}
+          {type === 'stat' && <CharStat char={char} type={type} />}
+          {type === 'change' && <CharExpChange char={char} type={type} />}
         </CharDescContainer>
       </Container>
     </Background>
@@ -108,14 +106,17 @@ const CharImg = styled.img`
 
 const CharDescContainer = styled.div`
   position: relative;
+  top: 0;
   left: -3rem;
+  height: 100%;
+  padding: 3rem 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const CharName = styled.span`
   position: relative;
-  top: 0rem;
   font-size: 3rem;
 `;
