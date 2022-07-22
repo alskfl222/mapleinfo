@@ -1,7 +1,7 @@
 services:
   client:
     restart: always
-    image: alskfl222/sv-client:0.5
+    image: alskfl222/sv-client:0.6
     ports:
       - 3000:3000
     volumes:
@@ -9,7 +9,7 @@ services:
 
   server:
     restart: always
-    image: alskfl222/sv-server:0.7
+    image: alskfl222/sv-server:0.8
     ports:
       - 4000:4000
       - 4004:4004

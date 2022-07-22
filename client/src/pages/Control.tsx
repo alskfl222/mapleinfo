@@ -26,7 +26,6 @@ export default function Control() {
     });
     return () => {
       socket.off('connect');
-      socket.off('setViewState');
     };
   }, []);
 
